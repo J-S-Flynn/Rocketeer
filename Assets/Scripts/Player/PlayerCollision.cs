@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,33 +6,61 @@ namespace Player
 {
     public class PlayerCollision : MonoBehaviour
     {
-        [SerializeField] private float sceneDelay = 2f;
+        // Serialisable fields
+        private readonly float sceneDelay = 2f;
 
-        private ParticleSystem _successPfx; 
-        private ParticleSystem _crashPfx;
-        
+        // Components
+        private GameObject _audio;
+     
+        //Audio 
         private AudioSource _audioSource;
-        
         private AudioClip _crashSfx;
         private AudioClip _successSfx;
 
+        // Particals 
+        private ParticleSystem _successPfx;
+        private ParticleSystem _crashPfx;
+
+        // Primatives 
         private bool _controllable; 
         
-        #region collisions and triggers
+        
 
         private void Start()
         {
-            _audioSource = GetComponent<AudioSource>();
+            // Create and attach Audio Object 
+            _audio = new GameObject("AudioSouce"); 
+            _audio.transform.SetParent(transform); 
+
+            _audioSource = _audio.AddComponent<AudioSource>(); 
+
             _audioSource.volume = 1f;
             
             _controllable = true;
 
-            _successPfx = Resources.Load<ParticleSystem>("Particles/SuccessPfx");
-            _crashPfx = Resources.Load<ParticleSystem>("Particles/CrashPfx");
+            _successSfx = Resources.Load<AudioClip>("Audio/Rocket/SuccessSfx");
+            _crashSfx = Resources.Load<AudioClip>("Audio/Rocket/CrashSfx");
             
-            _successSfx = Resources.Load<AudioClip>("Audio/Rocket/successSfx");
-            _crashSfx = Resources.Load<AudioClip>("Audio/Rocket/crasheSfx");
+
+            _successPfx = Resources.Load<ParticleSystem>("Particles/SuccessPfx");
+            _crashPfx = Resources.Load<ParticleSystem>("Particles/CrashPfx"); 
         }
+
+        #region Audio & Visual 
+
+        public void SetAudio()
+        {
+            
+        }
+
+        public void SetParticles()
+        {
+            
+        }
+
+        #endregion
+
+        #region collisions and triggers
 
         private void OnCollisionEnter(Collision other)
         {
@@ -44,10 +71,10 @@ namespace Player
                 case "Friendly":
                     break;
                 case "Finish":
-                    StartSuccessSequence();
+                    SuccessSequence();
                     break;
                 default:
-                    StartCrashSequence();
+                    CrashSequence();
                     break;   
             }
         }
@@ -67,7 +94,7 @@ namespace Player
     
         #region StopSequences
 
-        private void StartSuccessSequence()
+        private void SuccessSequence()
         {
             // TODO add sfx and particles
             
@@ -81,10 +108,8 @@ namespace Player
             Invoke("LoadNextScene", sceneDelay);
         }
         
-        private void StartCrashSequence()
+        private void CrashSequence()
         {
-            // TODO add sfx and particles 
-            
             DisableMovment();
             
             _audioSource.Stop();
