@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 198100719057022332}
   - component: {fileID: 199352953444421290}
   m_Layer: 0
-  m_Name: Rocket Jet Particles
+  m_Name: JetPfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

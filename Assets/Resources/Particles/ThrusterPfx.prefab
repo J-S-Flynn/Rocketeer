@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 584678573886053986}
   - component: {fileID: 605391004200926644}
   m_Layer: 0
-  m_Name: Side Thruster Particles
+  m_Name: ThrusterPfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
