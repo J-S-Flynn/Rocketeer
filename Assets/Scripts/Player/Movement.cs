@@ -1,17 +1,14 @@
-using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.PlayerLoop;
 
 namespace Player {
     
     public class Movement : MonoBehaviour
     {
         // Primatives
-        private float thrustStrength;
-        private float thrustDecayRate;
+        [SerializeField] private float thrustStrength;
+        [SerializeField] private float thrustDecayRate;
         private float rotationStrength;
         private float _currentThrust;
 
@@ -76,7 +73,7 @@ namespace Player {
             thrust.Enable();
             rotation.Enable();
         }
-        
+
         //fixed update is far better when we are using physics. 
         private void FixedUpdate()
         {
@@ -124,26 +121,31 @@ namespace Player {
         public void SetAudio()
         {
              // Create and attach Audio Object 
-            GameObject _audio = new GameObject("AudioSouce"); 
-            _audio.transform.SetParent(transform); 
+            GameObject audio = new GameObject("AudioSouce"); 
 
-            _audioSource = _audio.AddComponent<AudioSource>(); 
+            audio.transform.SetParent(transform); 
+
+            _audioSource = audio.AddComponent<AudioSource>(); 
+
+            _audioSource.volume = 1f;
 
             // Load Audio
             _thrustSfx = Resources.Load<AudioClip>("Audio/Rocket/ThrustSfx");
+
         }
 
         public void SetParticles()
         {
             // Load and add Particles System   
             GameObject jetPfx = Resources.Load<GameObject>("Particles/JetPfx");
+
             GameObject jet = Instantiate(jetPfx, transform.position, Quaternion.identity);
 
             jet.transform.SetParent(transform);
+            
             jet.transform.localPosition = new Vector3(0, -0.5f, 0);
 
             _rocketJetPfx = jet.GetComponent<ParticleSystem>();
-
             
         }
 

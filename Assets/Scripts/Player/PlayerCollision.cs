@@ -8,14 +8,11 @@ namespace Player
     {
         // Serialisable fields
         private readonly float sceneDelay = 2f;
-
-        // Components
-        private GameObject _audio;
      
         //Audio 
         private AudioSource _audioSource;
-        private AudioClip _crashSfx;
-        private AudioClip _successSfx;
+        private AudioClip _successSfx; 
+        private AudioClip _crashSfx; 
 
         // Particals 
         private ParticleSystem _successPfx;
@@ -28,34 +25,35 @@ namespace Player
 
         private void Start()
         {
-            // Create and attach Audio Object 
-            _audio = new GameObject("AudioSouce"); 
-            _audio.transform.SetParent(transform); 
+            _controllable = true; 
 
-            _audioSource = _audio.AddComponent<AudioSource>(); 
+            SetAudio();
 
-            _audioSource.volume = 1f;
-            
-            _controllable = true;
-
-            _successSfx = Resources.Load<AudioClip>("Audio/Rocket/SuccessSfx");
-            _crashSfx = Resources.Load<AudioClip>("Audio/Rocket/CrashSfx");
-            
-
-            _successPfx = Resources.Load<ParticleSystem>("Particles/SuccessPfx");
-            _crashPfx = Resources.Load<ParticleSystem>("Particles/CrashPfx"); 
+            SetParticles();
         }
 
         #region Audio & Visual 
 
         public void SetAudio()
         {
+            GameObject audio = new GameObject("AudioSource"); 
+
+            audio.transform.SetParent(transform); 
+
+            _audioSource = audio.AddComponent<AudioSource>(); 
+
+            _audioSource.volume = 1f; 
+
+            _crashSfx = Resources.Load<AudioClip>("Audio/Rocket/CrashSfx");  
+
+            _successSfx = Resources.Load<AudioClip>("Audio/Rocket/SuccessSfx");   
             
         }
 
         public void SetParticles()
         {
-            
+            _successPfx = Resources.Load<ParticleSystem>("Particles/SuccessPfx");
+            _crashPfx = Resources.Load<ParticleSystem>("Particles/CrashPfx"); 
         }
 
         #endregion
@@ -96,14 +94,12 @@ namespace Player
 
         private void SuccessSequence()
         {
-            // TODO add sfx and particles
             
             DisableMovment();
             
-            _audioSource.Stop();
             _audioSource.PlayOneShot(_successSfx);
             
-            Instantiate(_successPfx, transform.position, Quaternion.identity).Play();
+            Instantiate(_successPfx, transform.position, Quaternion.identity);
             
             Invoke("LoadNextScene", sceneDelay);
         }
@@ -113,12 +109,12 @@ namespace Player
             DisableMovment();
             
             _audioSource.Stop();
+
             _audioSource.PlayOneShot(_crashSfx);
             
             Instantiate(_crashPfx, transform.position, Quaternion.identity).Play();
             
-            Invoke("ReloadScene", sceneDelay);
-            
+            Invoke("ReloadScene", sceneDelay);  
         }
         
         private void DisableMovment()
