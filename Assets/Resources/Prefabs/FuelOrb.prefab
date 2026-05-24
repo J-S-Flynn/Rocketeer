@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4057415501503079932}
   - component: {fileID: 192739745038440463}
   - component: {fileID: 3148720580390043360}
-  - component: {fileID: 876494153951597216}
   - component: {fileID: 7328336752035823215}
   m_Layer: 0
   m_Name: FuelOrb
@@ -88,27 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &876494153951597216
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1426266379607677421}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7328336752035823215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +99,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e147e1a2010b4443691cfd956899f384, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bounceHeight: 0
-  _bounceSpeed: 0
-  _shrinkSpeed: 0
-  _moveSpeed: 0

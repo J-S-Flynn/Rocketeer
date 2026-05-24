@@ -2,14 +2,15 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Player
+namespace Assets.Scripts.Player
 {
     public class PlayerCollision : MonoBehaviour
     {
-        // Serialisable fields
+        // Primatives
         private readonly float sceneDelay = 2f;
+        private bool _controllable; 
      
-        //Audio 
+        // Audio 
         private AudioSource _audioSource;
         private AudioClip _successSfx; 
         private AudioClip _crashSfx; 
@@ -18,10 +19,6 @@ namespace Player
         private ParticleSystem _successPfx;
         private ParticleSystem _crashPfx;
 
-        // Primatives 
-        private bool _controllable; 
-        
-        
 
         private void Start()
         {
@@ -58,7 +55,7 @@ namespace Player
 
         #endregion
 
-        #region collisions and triggers
+        #region Behaviour
 
         private void OnCollisionEnter(Collision other)
         {
@@ -88,18 +85,16 @@ namespace Player
             }
         }
         
-        #endregion
-    
-        #region StopSequences
-
         private void SuccessSequence()
         {
             
             DisableMovment();
             
+            _audioSource.Stop();
+
             _audioSource.PlayOneShot(_successSfx);
             
-            Instantiate(_successPfx, transform.position, Quaternion.identity);
+            Instantiate(_successPfx, transform.position, Quaternion.identity).Play();
             
             Invoke("LoadNextScene", sceneDelay);
         }
@@ -128,7 +123,7 @@ namespace Player
         
         #endregion
 
-        #region SceneLoading
+        #region Scene Loading
         
         private void LoadNextScene()
         {

@@ -2,13 +2,13 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Player {
+namespace Assets.Scripts.Player {
     
     public class Movement : MonoBehaviour
     {
         // Primatives
-        [SerializeField] private float thrustStrength;
-        [SerializeField] private float thrustDecayRate;
+        private float thrustStrength;
+        private float thrustDecayRate;
         private float rotationStrength;
         private float _currentThrust;
 
@@ -22,8 +22,8 @@ namespace Player {
          
         // Partical 
         private ParticleSystem _rocketJetPfx;
-        // private ParticleSystem _leftThrustPfx;
-        // private ParticleSystem _rightThrustPfx;
+        private ParticleSystem _leftThrustPfx;
+        private ParticleSystem _rightThrustPfx;
 
         // Coroutines
         private Coroutine _fadeOutRoutine; 
@@ -34,8 +34,10 @@ namespace Player {
 
         // primatives   
 
+
         private void Start()
         {
+            
             // components
             SetRocketBody();
 
@@ -74,6 +76,7 @@ namespace Player {
             rotation.Enable();
         }
 
+        #region Game Loop
         //fixed update is far better when we are using physics. 
         private void FixedUpdate()
         {
@@ -81,7 +84,9 @@ namespace Player {
             ProcessRotation();
         }
 
-        #region Body 
+        #endregion
+
+        #region Setup 
         
         public void SetRocketBody()
         {
@@ -103,7 +108,7 @@ namespace Player {
 
             _rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
 
-            // Boc Collider 
+            // Box Collider 
             _boxCollider = GetComponent<BoxCollider>(); 
 
             if(_boxCollider == null)
@@ -127,16 +132,14 @@ namespace Player {
 
             _audioSource = audio.AddComponent<AudioSource>(); 
 
-            _audioSource.volume = 1f;
+            _audioSource.volume = 0.5f;
 
-            // Load Audio
             _thrustSfx = Resources.Load<AudioClip>("Audio/Rocket/ThrustSfx");
-
         }
 
         public void SetParticles()
         {
-            // Load and add Particles System   
+            // Load Jet 
             GameObject jetPfx = Resources.Load<GameObject>("Particles/JetPfx");
 
             GameObject jet = Instantiate(jetPfx, transform.position, Quaternion.identity);
@@ -146,13 +149,27 @@ namespace Player {
             jet.transform.localPosition = new Vector3(0, -0.5f, 0);
 
             _rocketJetPfx = jet.GetComponent<ParticleSystem>();
-            
-        }
 
+            // Load Thruster 
+            GameObject thrusterPfx = Resources.Load<GameObject>("Particles/ThrusterPfx");
+
+            GameObject lThrust = Instantiate(thrusterPfx, transform.position, Quaternion.identity);
+            GameObject rThrust = Instantiate(thrusterPfx, transform.position, Quaternion.identity);
+
+            lThrust.transform.SetParent(transform);
+            lThrust.transform.localPosition = new Vector3(1f, -0.5f,0f);
+
+            rThrust.transform.SetParent(transform);
+            rThrust.transform.localPosition = new Vector3(-1f, -0.5f,0f);
+
+            _leftThrustPfx = lThrust.GetComponent<ParticleSystem>();
+
+            _rightThrustPfx = rThrust.GetComponent<ParticleSystem>();
+        }
+                
         #endregion
 
-        #region Movment
- 
+        #region Behaviour
         
         private void ProcessThrust()
         {
@@ -172,14 +189,13 @@ namespace Player {
                     _audioSource.PlayOneShot(_thrustSfx);
                 }
 
-                if (!_rocketJetPfx.isEmitting)
+                if (!_rocketJetPfx.isPlaying)
                 {
                     _rocketJetPfx.Play(); 
                 }
-
             }
             else
-            {
+            { 
                 _currentThrust = Mathf.MoveTowards(_currentThrust, 0f, thrustStrength * Time.fixedDeltaTime / thrustDecayRate);
 
                 if (_audioSource.isPlaying && _fadeOutRoutine == null)
@@ -203,28 +219,46 @@ namespace Player {
             if (rotationValue < 0f)
             {
                 ApplyRotation(rotationStrength);
+
+                if (!_leftThrustPfx.isPlaying)
+                {
+                    _leftThrustPfx.Play();
+                    _audioSource.PlayOneShot(_thrustSfx);
+                }
             }
             else if (rotationValue > 0f)
             {
                 ApplyRotation(-rotationStrength);
+
+                if (!_rightThrustPfx.isPlaying)
+                {
+                    _rightThrustPfx.Play();
+                    _audioSource.PlayOneShot(_thrustSfx);
+                }
+            }
+            else
+            {
+                if (_leftThrustPfx.isPlaying)
+                {
+                    _leftThrustPfx.Stop();
+                }
+                else {
+                    _rightThrustPfx.Stop();
+                }
             }
         }
 
         private void ApplyRotation(float r)
         {
-
             transform.Rotate(Vector3.forward * (r * Time.fixedDeltaTime));
         }
 
+        
         private void OnDisable()
         {
             thrust.Disable();
             rotation.Disable(); 
         }
-
-        #endregion
-
-        #region Sound
 
         private IEnumerator FadeOutAudioVisuals()
         {
