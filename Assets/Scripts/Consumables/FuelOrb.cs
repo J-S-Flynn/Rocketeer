@@ -4,10 +4,10 @@ namespace Consumables
 {
     public class FuelOrb : MonoBehaviour
     {
-        [SerializeField] private float _bounceHeight; 
-        [SerializeField] private float _bounceSpeed;
-        [SerializeField] private float _shrinkSpeed;
-        [SerializeField] private float _moveSpeed;
+        private float _bounceHeight; 
+        private float _bounceSpeed;
+        private float _shrinkSpeed;
+        private float _moveSpeed;
 
         private bool _isShrinking; 
         
@@ -35,19 +35,19 @@ namespace Consumables
         {
             if (!_isShrinking)
             {
-                float newY = _startPosition.y + Mathf.Sin(Time.time * _bounceSpeed) * _bounceHeight;
-                transform.position = new Vector3(_startPosition.x, newY, _startPosition.z);
+                Bounce();
             }
         }
         
         private void FixedUpdate()
         {
+
+
             if (_isShrinking)
             {
                Shrink();
             }
         }
-
         
         private void OnTriggerEnter(Collider other)
         {
