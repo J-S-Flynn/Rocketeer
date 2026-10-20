@@ -342,7 +342,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 311.74155, y: 1.1427431, z: -6.5}
+  m_LocalPosition: {x: 311.71106, y: 1.32, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1664,7 +1664,7 @@ Transform:
   m_GameObject: {fileID: 1991471077}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 311.74155, y: 1.1427431, z: -6.5}
+  m_LocalPosition: {x: 311.71106, y: 1.32, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1685,17 +1685,17 @@ MonoBehaviour:
   CameraDistance: 5
   DeadZoneDepth: 0
   Composition:
-    ScreenPosition: {x: -0.002969578, y: -0.030701786}
+    ScreenPosition: {x: 0, y: 0}
     DeadZone:
-      Enabled: 1
-      Size: {x: 0.13303563, y: 0.24733722}
+      Enabled: 0
+      Size: {x: 0.13185462, y: 0.2}
     HardLimits:
       Enabled: 1
-      Size: {x: 0.46071443, y: 0.55714357}
+      Size: {x: 0.15, y: 0.25}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 0, z: -1.5}
-  Damping: {x: 0, y: 0, z: 0}
+  TargetOffset: {x: 0, y: 0, z: 0}
+  Damping: {x: 1, y: 1, z: 1}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -1888,6 +1888,14 @@ PrefabInstance:
     - target: {fileID: 8072745084002770853, guid: eedecd1ffb23d4300aa6deea18ee3a2b, type: 3}
       propertyPath: m_Name
       value: Player Rocket
+      objectReference: {fileID: 0}
+    - target: {fileID: 8456216246932453310, guid: eedecd1ffb23d4300aa6deea18ee3a2b, type: 3}
+      propertyPath: ParticleSize
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 9211765293648944131, guid: eedecd1ffb23d4300aa6deea18ee3a2b, type: 3}
+      propertyPath: particalSize
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

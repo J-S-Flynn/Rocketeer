@@ -6,11 +6,14 @@ namespace Assets.Scripts.Player {
     
     public class Movement : MonoBehaviour
     {
+
         // Primatives
         private float thrustStrength;
         private float thrustDecayRate;
         private float rotationStrength;
         private float _currentThrust;
+        private float particalSizeLarge = 0.2f;
+        private float particalSizeSmall = 0.05f;
 
         // components
         private Rigidbody _rigidbody;    
@@ -34,7 +37,7 @@ namespace Assets.Scripts.Player {
 
         // primatives   
 
-
+        #region Init
         private void Start()
         {
             
@@ -76,6 +79,8 @@ namespace Assets.Scripts.Player {
             rotation.Enable();
         }
 
+        #endregion
+        
         #region Game Loop
         //fixed update is far better when we are using physics. 
         private void FixedUpdate()
@@ -150,102 +155,149 @@ namespace Assets.Scripts.Player {
 
             _rocketJetPfx = jet.GetComponent<ParticleSystem>();
 
+            var jetShape = _rocketJetPfx.shape; 
+            var jetMain = _rocketJetPfx.main; 
+            var jetEmmision = _rocketJetPfx.emission;
+
+            jetShape.scale = new Vector3(1f, 1.5f, 1f);
+            jetMain.startSize = particalSizeLarge;
+            jetEmmision.burstCount = 8;
+
             // Load Thruster 
             GameObject thrusterPfx = Resources.Load<GameObject>("Particles/ThrusterPfx");
+
 
             GameObject lThrust = Instantiate(thrusterPfx, transform.position, Quaternion.identity);
             GameObject rThrust = Instantiate(thrusterPfx, transform.position, Quaternion.identity);
 
             lThrust.transform.SetParent(transform);
-            lThrust.transform.localPosition = new Vector3(1f, -0.5f,0f);
+            lThrust.transform.localPosition = new Vector3(0.75f, -0.25f, 0f);
 
             rThrust.transform.SetParent(transform);
-            rThrust.transform.localPosition = new Vector3(-1f, -0.5f,0f);
+            rThrust.transform.localPosition = new Vector3(-0.75f, -0.25f, 0f);
 
             _leftThrustPfx = lThrust.GetComponent<ParticleSystem>();
 
+            var lShape = _leftThrustPfx.shape;
+            var lMain = _leftThrustPfx.main;
+
+            lShape.scale = new Vector3(0.5f, 0.25f, 0.1f);
+            lMain.startSize = particalSizeSmall; 
+            lMain.startSpeed = 1f;
+            
+
             _rightThrustPfx = rThrust.GetComponent<ParticleSystem>();
+
+            var rShape = _rightThrustPfx.shape;
+            var rMain = _rightThrustPfx.main;
+
+            rShape.scale = new Vector3(0.5f, 0.25f, 0.1f);
+            rMain.startSize = particalSizeSmall; 
+            rMain.startSpeed = -10f;
+            
         }
                 
         #endregion
 
-        #region Behaviour
+        #region Thrust
         
         private void ProcessThrust()
         {
             if (thrust.IsPressed())
             {
-
-                _rigidbody.AddRelativeForce(Vector3.up * (thrustStrength * Time.fixedDeltaTime));
-                
-                if (!_audioSource.isPlaying)
-                {
-                    if (_fadeOutRoutine != null)
-                    {
-                        StopCoroutine(_fadeOutRoutine);
-                        _fadeOutRoutine = null;
-                    }
-                    
-                    _audioSource.PlayOneShot(_thrustSfx);
-                }
-
-                if (!_rocketJetPfx.isPlaying)
-                {
-                    _rocketJetPfx.Play(); 
-                }
+                StartThrusters();
             }
             else
-            { 
-                _currentThrust = Mathf.MoveTowards(_currentThrust, 0f, thrustStrength * Time.fixedDeltaTime / thrustDecayRate);
+            {
+                EndThrusting();
+            }
 
-                if (_audioSource.isPlaying && _fadeOutRoutine == null)
-                {
-                    _fadeOutRoutine = StartCoroutine(FadeOutAudioVisuals());
-                }
-
-                _rocketJetPfx.Stop();
-            } 
-            
             if (_currentThrust > 0f)
             {
                 _rigidbody.AddRelativeForce(Vector3.up * (_currentThrust * Time.fixedDeltaTime));
             }
         }
 
+        private void StartThrusters()
+        {
+            _rigidbody.AddRelativeForce(Vector3.up * (thrustStrength * Time.fixedDeltaTime));
+
+            if (!_audioSource.isPlaying)
+            {
+                if (_fadeOutRoutine != null)
+                {
+                    StopCoroutine(_fadeOutRoutine);
+                    _fadeOutRoutine = null;
+                }
+
+                _audioSource.PlayOneShot(_thrustSfx);
+            }
+
+            if (!_rocketJetPfx.isPlaying)
+            {
+                _rocketJetPfx.Play();
+            }
+        }
+
+        private void EndThrusting()
+        {
+            _currentThrust = Mathf.MoveTowards(_currentThrust, 0f, thrustStrength * Time.fixedDeltaTime / thrustDecayRate);
+
+            if (_audioSource.isPlaying && _fadeOutRoutine == null)
+            {
+                _fadeOutRoutine = StartCoroutine(FadeOutAudioVisuals());
+            }
+
+            _rocketJetPfx.Stop();
+        }
+
+        #endregion
+
+        #region Rotation
         private void ProcessRotation()
         {
             var rotationValue = rotation.ReadValue<float>();
 
             if (rotationValue < 0f)
             {
-                ApplyRotation(rotationStrength);
-
-                if (!_leftThrustPfx.isPlaying)
-                {
-                    _leftThrustPfx.Play();
-                    _audioSource.PlayOneShot(_thrustSfx);
-                }
+                RotateRight();
             }
             else if (rotationValue > 0f)
             {
-                ApplyRotation(-rotationStrength);
-
-                if (!_rightThrustPfx.isPlaying)
-                {
-                    _rightThrustPfx.Play();
-                    _audioSource.PlayOneShot(_thrustSfx);
-                }
+                RotateLeft();
             }
             else
             {
-                if (_leftThrustPfx.isPlaying)
-                {
-                    _leftThrustPfx.Stop();
-                }
-                else {
-                    _rightThrustPfx.Stop();
-                }
+                StopRotation();
             }
+        }
+
+        private void RotateRight()
+        {
+            ApplyRotation(rotationStrength);
+
+            if (!_leftThrustPfx.isPlaying)
+            {
+                _leftThrustPfx.Play();
+                _audioSource.PlayOneShot(_thrustSfx);
+            }
+        }
+
+        private void RotateLeft()
+        {
+            ApplyRotation(-rotationStrength);
+
+            if (!_rightThrustPfx.isPlaying)
+            {
+                _rightThrustPfx.Play();
+                _audioSource.PlayOneShot(_thrustSfx);
+            }
+        }
+
+        private void StopRotation()
+        {
+            _leftThrustPfx.Stop();
+            _rightThrustPfx.Stop();
         }
 
         private void ApplyRotation(float r)
@@ -253,6 +305,9 @@ namespace Assets.Scripts.Player {
             transform.Rotate(Vector3.forward * (r * Time.fixedDeltaTime));
         }
 
+        #endregion
+
+        #region EndSequence
         
         private void OnDisable()
         {

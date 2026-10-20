@@ -6,6 +6,8 @@ namespace Assets.Scripts.Player
 {
     public class PlayerCollision : MonoBehaviour
     {
+        
+        private float ParticleSize = 0.25f; 
         // Primatives
         private readonly float sceneDelay = 2f;
         private bool _controllable; 
@@ -19,7 +21,8 @@ namespace Assets.Scripts.Player
         private ParticleSystem _successPfx;
         private ParticleSystem _crashPfx;
 
-
+        #region Init
+        
         private void Start()
         {
             _controllable = true; 
@@ -28,6 +31,8 @@ namespace Assets.Scripts.Player
 
             SetParticles();
         }
+
+        #endregion
 
         #region Audio & Visual 
 
@@ -50,7 +55,14 @@ namespace Assets.Scripts.Player
         public void SetParticles()
         {
             _successPfx = Resources.Load<ParticleSystem>("Particles/SuccessPfx");
+
+            ParticleSystem.MainModule successMain = _successPfx.main; 
+            successMain.startSize = ParticleSize;
+
             _crashPfx = Resources.Load<ParticleSystem>("Particles/CrashPfx"); 
+
+            ParticleSystem.MainModule crashMain = _crashPfx.main;
+            crashMain.startSize = ParticleSize; 
         }
 
         #endregion
