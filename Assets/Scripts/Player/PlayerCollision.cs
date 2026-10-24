@@ -1,15 +1,20 @@
-
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Assets.Scripts.Services;
+
 
 namespace Assets.Scripts.Player
 {
     public class PlayerCollision : MonoBehaviour
     {
+
+        //Imports
+        private SceneManagementService _sceneManagementService;
+
         // Primatives
-        private readonly float sceneDelay = 2f;
-        private bool _controllable; 
-     
+        private float ParticleSize = 0.25f; 
+        private bool _collidable; 
+        private bool _controllable;
+
         // Audio 
         private AudioSource _audioSource;
         private AudioClip _successSfx; 
@@ -19,15 +24,24 @@ namespace Assets.Scripts.Player
         private ParticleSystem _successPfx;
         private ParticleSystem _crashPfx;
 
+        #region Init
+        
+        private void Awake()
+        {
+            _collidable = true;
+            _controllable = true;
+
+            _sceneManagementService = SceneManagementService.Instance;
+        }
 
         private void Start()
-        {
-            _controllable = true; 
-
+        {  
             SetAudio();
 
             SetParticles();
         }
+
+        #endregion
 
         #region Audio & Visual 
 
@@ -50,7 +64,14 @@ namespace Assets.Scripts.Player
         public void SetParticles()
         {
             _successPfx = Resources.Load<ParticleSystem>("Particles/SuccessPfx");
+
+            ParticleSystem.MainModule successMain = _successPfx.main; 
+            successMain.startSize = ParticleSize;
+
             _crashPfx = Resources.Load<ParticleSystem>("Particles/CrashPfx"); 
+
+            ParticleSystem.MainModule crashMain = _crashPfx.main;
+            crashMain.startSize = ParticleSize; 
         }
 
         #endregion
@@ -59,6 +80,7 @@ namespace Assets.Scripts.Player
 
         private void OnCollisionEnter(Collision other)
         {
+            if (!_collidable) return;
             if (!_controllable) return; 
             
             switch (other.gameObject.tag)
@@ -86,8 +108,7 @@ namespace Assets.Scripts.Player
         }
         
         private void SuccessSequence()
-        {
-            
+        { 
             DisableMovment();
             
             _audioSource.Stop();
@@ -96,7 +117,7 @@ namespace Assets.Scripts.Player
             
             Instantiate(_successPfx, transform.position, Quaternion.identity).Play();
             
-            Invoke("LoadNextScene", sceneDelay);
+            Invoke(nameof(LoadNextScene), 2f);
         }
         
         private void CrashSequence()
@@ -109,7 +130,7 @@ namespace Assets.Scripts.Player
             
             Instantiate(_crashPfx, transform.position, Quaternion.identity).Play();
             
-            Invoke("ReloadScene", sceneDelay);  
+            Invoke(nameof(ReloadScene), 2f);
         }
         
         private void DisableMovment()
@@ -123,29 +144,22 @@ namespace Assets.Scripts.Player
         
         #endregion
 
-        #region Scene Loading
-        
+
+        #region public Accessors
+      
         private void LoadNextScene()
         {
-            var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-            var lastSceneIndex = SceneManager.sceneCountInBuildSettings - 1;
-
-            Debug.Log($"current {currentSceneIndex}" );
-            Debug.Log($"last {lastSceneIndex}" );
-            
-            if (currentSceneIndex >= lastSceneIndex)
-            {
-                SceneManager.LoadScene(0);
-            }
-            else
-            {
-                SceneManager.LoadScene(currentSceneIndex + 1);
-            }
+            _sceneManagementService.LoadNextScene();
         }
-        
+
         private void ReloadScene()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            _sceneManagementService.ReloadScene();  
+        }
+        
+        public void SetCollidable()
+        {
+            _collidable = !_collidable; 
         }
         
         #endregion

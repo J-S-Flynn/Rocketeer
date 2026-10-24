@@ -21,6 +21,7 @@ namespace Assets.Scripts.Consumables
         private AudioSource _audioSauce;
         private AudioClip _orbCollectionSfx;
         
+        #region Init
 
         private void Awake()
         {
@@ -31,6 +32,8 @@ namespace Assets.Scripts.Consumables
             SetAudio();
         }
 
+        #endregion
+        
         #region Game Loop 
         private void Update()
         {
