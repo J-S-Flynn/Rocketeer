@@ -16,7 +16,7 @@ namespace Assets.Scripts.Player {
         private float particalSizeSmall = 0.05f;
 
         // components
-        private Rigidbody _rigidbody;    
+        private Rigidbody _rocket;    
         private BoxCollider _boxCollider;
 
         // Audio  
@@ -40,7 +40,6 @@ namespace Assets.Scripts.Player {
         #region Init
         private void Start()
         {
-            
             // components
             SetRocketBody();
 
@@ -96,22 +95,22 @@ namespace Assets.Scripts.Player {
         public void SetRocketBody()
         {
             // Riged Body 
-            _rigidbody = GetComponent<Rigidbody>(); 
+            _rocket = GetComponent<Rigidbody>(); 
 
-            if(_rigidbody == null)
+            if(_rocket == null)
             {
-                _rigidbody = gameObject.AddComponent<Rigidbody>();
+                _rocket = gameObject.AddComponent<Rigidbody>();
             }
 
-            _rigidbody.mass = 1f; 
-            _rigidbody.linearDamping = 2.5f;
-            _rigidbody.angularDamping = 5f; 
+            _rocket.mass = 1f; 
+            _rocket.linearDamping = 2.5f;
+            _rocket.angularDamping = 5f; 
 
-            _rigidbody.automaticCenterOfMass = true; 
-            _rigidbody.automaticInertiaTensor = true; 
-            _rigidbody.useGravity = true; 
+            _rocket.automaticCenterOfMass = true; 
+            _rocket.automaticInertiaTensor = true; 
+            _rocket.useGravity = true; 
 
-            _rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
+            _rocket.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
 
             // Box Collider 
             _boxCollider = GetComponent<BoxCollider>(); 
@@ -214,13 +213,13 @@ namespace Assets.Scripts.Player {
 
             if (_currentThrust > 0f)
             {
-                _rigidbody.AddRelativeForce(Vector3.up * (_currentThrust * Time.fixedDeltaTime));
+                _rocket.AddRelativeForce(Vector3.up * (_currentThrust * Time.fixedDeltaTime));
             }
         }
 
         private void StartThrusters()
         {
-            _rigidbody.AddRelativeForce(Vector3.up * (thrustStrength * Time.fixedDeltaTime));
+            _rocket.AddRelativeForce(Vector3.up * (thrustStrength * Time.fixedDeltaTime));
 
             if (!_audioSource.isPlaying)
             {
